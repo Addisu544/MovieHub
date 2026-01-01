@@ -1,26 +1,151 @@
-.movie-details {
+/* .movie-details {
   padding: 20px;
-  max-width: 900px;
+  max-width: 1000px;
   margin: auto;
 }
 
-.movie-details img {
-  width: 100%;
-  max-width: 300px;
+.movie-header {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.movie-header img {
+  width: 300px;
   border-radius: 10px;
 }
 
-.movie-details h2 {
-  margin-top: 20px;
+.movie-info {
+  flex: 1;
 }
 
-.movie-details p {
-  margin: 10px 0;
+.movie-info h1 {
+  margin-bottom: 10px;
 }
 
-.movie-details iframe {
-  margin-top: 20px;
+.tagline {
+  font-style: italic;
+  opacity: 0.8;
+  margin-bottom: 15px;
+}
+
+.genres {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.genres span {
+  background: #f5c518;
+  color: black;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.overview {
+  margin-top: 30px;
+}
+
+.trailer {
+  margin-top: 40px;
+}
+
+.trailer iframe {
   width: 100%;
-  height: 315px;
+  height: 400px;
   border-radius: 10px;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+} */
+
+.movie-details {
+  padding: 20px;
+  max-width: 1000px;
+  margin: auto;
+}
+
+/* HEADER: image + info stacked vertically */
+.movie-header {
+  display: flex;
+  flex-direction: row; /* image on left, info on right */
+  gap: 5px;
+  align-items: flex-start; /* align top of image + info */
+  flex-wrap: wrap; /* allow wrap on small screens */
+}
+
+.movie-header img {
+  width: 300px;
+  border-radius: 10px;
+}
+
+.movie-info {
+  display: flex;
+  flex-direction: column; /* stack info vertically */
+  gap: 10px; /* space between lines */
+  flex: 1; /* take remaining width next to image */
+  min-width: 250px; /* prevent shrinking too small */
+}
+
+.movie-info h1 {
+  margin-bottom: 5px;
+}
+
+.tagline {
+  font-style: italic;
+  opacity: 0.8;
+  margin-bottom: 10px;
+}
+
+.genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.genres span {
+  background: #f5c518;
+  color: black;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.overview {
+  margin-top: 30px;
+}
+
+.trailer {
+  margin-top: 40px;
+}
+
+.trailer iframe {
+  width: 100%;
+  height: 400px;
+  border-radius: 10px;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+}
+
+/* Responsive: stack vertically on small screens */
+@media (max-width: 768px) {
+  .movie-header {
+    flex-direction: column; /* stack poster on top, info below */
+    align-items: center;
+  }
+
+  .movie-info {
+    min-width: 100%;
+  }
+
+  .movie-header img {
+    width: 80%; /* smaller image for mobile */
+    max-width: 300px;
+  }
 }

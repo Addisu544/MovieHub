@@ -2,28 +2,106 @@
   background-color: #1c1c1c;
   border-radius: 10px;
   overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .movie-card:hover {
   transform: scale(1.05);
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
 }
 
-.movie-card img {
+/* IMAGE */
+.image-wrapper {
   width: 100%;
   height: 270px;
+  overflow: hidden;
+}
+
+.image-wrapper img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
-.movie-card h3 {
-  font-size: 16px;
-  margin: 10px;
+/* CONTENT AREA */
+.movie-info {
+  padding: 10px;
+  height: 48px; /* ✅ FIXED HEIGHT (2 lines max) */
+  display: flex;
+  align-items: center;
 }
 
-.movie-card p {
-  margin: 0 10px 10px;
-  font-size: 14px;
-  color: #f5c518;
+.movie-info h3 {
+  font-size: 16px;
+  margin: 0;
+  color: white;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* BUTTON */
+.fav-btn {
+  margin: 10px;
+  margin-top: auto; /* ✅ PUSHES BUTTON TO BOTTOM */
+  padding: 8px;
+  border: none;
+  background-color: #f5c518;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.fav-btn:hover {
+  opacity: 0.9;
+}
+
+/* LINK RESET */
+.movie-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Skeleton styles */
+.skeleton .skeleton-box {
+  background-color: #333;
+  border-radius: 6px;
+  animation: shimmer 1.5s infinite linear;
+}
+
+.skeleton .image-wrapper.skeleton-box {
+  width: 100%;
+  height: 270px;
+}
+
+.skeleton .title-placeholder {
+  width: 80%;
+  height: 20px;
+  margin: 10px 0;
+}
+
+.skeleton .fav-btn.skeleton-box {
+  width: 100%;
+  height: 35px;
+  margin: 10px 0;
+}
+
+/* Shimmer effect */
+@keyframes shimmer {
+  0% {
+    background-position: -500px 0;
+  }
+  100% {
+    background-position: 500px 0;
+  }
+}
+
+.skeleton-box {
+  background: linear-gradient(to right, #333 0%, #444 50%, #333 100%);
+  background-size: 1000px 100%;
 }
