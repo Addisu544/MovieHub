@@ -31,7 +31,7 @@
   padding: 10px;
   height: 48px; /* ✅ FIXED HEIGHT (2 lines max) */
   display: flex;
-  align-items: center;
+  /* align-items: center; */
 }
 
 .movie-info h3 {
@@ -51,7 +51,7 @@
   margin-top: auto; /* ✅ PUSHES BUTTON TO BOTTOM */
   padding: 8px;
   border: none;
-  background-color: #f5c518;
+  background-color: #ffffff;
   font-weight: bold;
   border-radius: 5px;
   cursor: pointer;

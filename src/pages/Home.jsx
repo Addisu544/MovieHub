@@ -108,7 +108,7 @@ const Home = () => {
         setSortBy={setSortBy}
       />
 
-      <div className="movies-grid">
+      {/* <div className="movies-grid">
         {loading
           ? Array.from({ length: 8 }).map((_, i) => (
               <MovieCard key={i} loading={true} />
@@ -116,6 +116,18 @@ const Home = () => {
           : filteredMovies.map((movie) => (
               <MovieCard key={movie.id} movie={movie} />
             ))}
+      </div> */}
+      <div className="movies-grid">
+        {filteredMovies.map((movie) => (
+          <MovieCard key={movie.id} movie={movie} />
+        ))}
+
+        {/* Skeletons only for next-page loading */}
+        {loading &&
+          page > 1 &&
+          Array.from({ length: 6 }).map((_, i) => (
+            <MovieCard key={`skeleton-${i}`} loading />
+          ))}
       </div>
 
       {/* 👇 Scroll trigger */}

@@ -11,18 +11,17 @@ const TopBar = () => {
       <div className="topbar-side" />
 
       {/* Center title */}
-      <h1 className="topbar-title">Movies</h1>
+      <h1 className="topbar-title">Movies Hub</h1>
 
       {/* Right actions */}
       <div className="topbar-actions">
-        <Link to="/favorites" className="favorites-btn">
-          ⭐ Favorites
-        </Link>
-
         <label className="switch">
           <input type="checkbox" checked={darkMode} onChange={toggleTheme} />
           <span className="slider round"></span>
         </label>
+        <Link to="/favorites" className="favorites-btn">
+          ⭐ Favorites
+        </Link>
       </div>
     </div>
   );
