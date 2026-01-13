@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import "./TopBar.css";
 
-const TopBar = () => {
+const TopBar = ({ showFavorites = true }) => {
   const { darkMode, toggleTheme } = useTheme();
 
   return (
@@ -19,9 +19,14 @@ const TopBar = () => {
           <input type="checkbox" checked={darkMode} onChange={toggleTheme} />
           <span className="slider round"></span>
         </label>
-        <Link to="/favorites" className="favorites-btn">
+        {/* <Link to="/favorites" className="favorites-btn">
           ⭐ Favorites
-        </Link>
+        </Link> */}
+        {showFavorites && (
+          <Link to="/favorites" className="favorites-btn">
+            ⭐ Favorites
+          </Link>
+        )}
       </div>
     </div>
   );
