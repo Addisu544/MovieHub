@@ -18,21 +18,28 @@
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   min-width: 140px;
 }
 
 .brand-mark {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  background: var(--accent);
-  opacity: 0.9;
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.5;
+  flex: 0 0 auto;
+  transform: translateY(0.5px);
+}
+
+.brand-mark polygon {
+  fill: currentColor;
+  stroke: none;
 }
 
 .brand-text {
-  font-weight: 700;
-  letter-spacing: 0.2px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
 }
 
 .search {

@@ -20,7 +20,10 @@ const HeaderBar = ({
     <header className="header">
       <div className="container header-inner">
         <Link to="/" className="brand" aria-label="MovieHub home">
-          <span className="brand-mark" aria-hidden="true" />
+          <svg className="brand-mark" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="3" />
+            <polygon points="10,8 16,12 10,16" />
+          </svg>
           <span className="brand-text">MovieHub</span>
         </Link>
 
