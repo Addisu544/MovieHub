@@ -1,42 +1,63 @@
-const API_KEY = "fd43471a30e013ebf4bef262861b112e";
 const BASE_URL = "https://api.themoviedb.org/3";
 
-export const fetchTrendingMovies = async () => {
-  try {
-    const res = await fetch(
-      `${BASE_URL}/trending/movie/week?api_key=${API_KEY}`
+function getApiKey() {
+  const key = import.meta.env.VITE_TMDB_KEY;
+  if (!key) {
+    throw new Error(
+      "Missing TMDB key. Set VITE_TMDB_KEY in your .env file (see .env.example)."
     );
-    const data = await res.json();
-    return data.results;
-  } catch (error) {
-    console.error("Error fetching trending movies:", error);
-    return [];
   }
-};
+  return key;
+}
 
-export const searchMovies = async (query) => {
-  try {
-    const res = await fetch(
-      `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(
-        query
-      )}`
-    );
-    const data = await res.json();
-    return data.results;
-  } catch (error) {
-    console.error("Error searching movies:", error);
-    return [];
-  }
-};
+function toQueryString(params) {
+  const qs = new URLSearchParams();
+  Object.entries(params).forEach(([k, v]) => {
+    if (v === undefined || v === null || v === "") return;
+    qs.set(k, String(v));
+  });
+  return qs.toString();
+}
 
-export const fetchMovieDetails = async (id) => {
-  try {
-    const res = await fetch(
-      `${BASE_URL}/movie/${id}?api_key=${API_KEY}&append_to_response=videos`
-    );
-    return await res.json();
-  } catch (error) {
-    console.error("Error fetching movie details:", error);
-    return null;
+async function tmdbGet(path, params = {}, { signal } = {}) {
+  const api_key = getApiKey();
+  const query = toQueryString({ api_key, language: "en-US", ...params });
+  const res = await fetch(`${BASE_URL}${path}?${query}`, { signal });
+
+  if (!res.ok) {
+    let details = "";
+    try {
+      const body = await res.json();
+      details = body?.status_message ? ` (${body.status_message})` : "";
+    } catch {
+      // ignore
+    }
+    throw new Error(`TMDB request failed: ${res.status} ${res.statusText}${details}`);
   }
-};
+
+  return await res.json();
+}
+
+export async function fetchPopularMovies({ page = 1, signal } = {}) {
+  return await tmdbGet("/movie/popular", { page }, { signal });
+}
+
+export async function fetchTrendingMovies({ timeWindow = "week", signal } = {}) {
+  return await tmdbGet(`/trending/movie/${timeWindow}`, {}, { signal });
+}
+
+export async function searchMovies({ query, page = 1, signal } = {}) {
+  return await tmdbGet("/search/movie", { query, page, include_adult: false }, { signal });
+}
+
+export async function fetchGenres({ signal } = {}) {
+  return await tmdbGet("/genre/movie/list", {}, { signal });
+}
+
+export async function fetchMovieDetails({ id, signal } = {}) {
+  return await tmdbGet(
+    `/movie/${id}`,
+    { append_to_response: "videos,credits" },
+    { signal }
+  );
+}

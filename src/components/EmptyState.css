@@ -1,0 +1,32 @@
+.empty {
+  padding: var(--space-4) 0;
+}
+
+.empty-panel {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--panel);
+  padding: var(--space-4);
+  text-align: center;
+}
+
+.empty-title {
+  font-size: 18px;
+  letter-spacing: -0.01em;
+}
+
+.empty-desc {
+  margin-top: var(--space-1);
+  color: var(--muted);
+  max-width: 60ch;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.5;
+}
+
+.empty-actions {
+  margin-top: var(--space-2);
+  display: inline-flex;
+  gap: 10px;
+}
+

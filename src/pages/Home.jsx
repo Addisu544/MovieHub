@@ -1,102 +1,100 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import MovieCard from "../components/MovieCard";
 import FilterBar from "../components/FilterBar";
-import SearchBar from "../components/SearchBar";
-import TopBar from "../components/TopBar";
+import AppShell from "../layout/AppShell";
+import { useDebounce } from "../hooks/useDebounce";
+import { useMovies } from "../hooks/useMovies";
+import { fetchTrendingMovies } from "../api/tmdb";
+import HeroFeatured from "../components/HeroFeatured";
+import EmptyState from "../components/EmptyState";
 
 import "./Home.css";
 
-const API_KEY = "fd43471a30e013ebf4bef262861b112e";
-const BASE_URL = "https://api.themoviedb.org/3";
-
 const Home = () => {
-  const [movies, setMovies] = useState([]);
-  const [genres, setGenres] = useState([]);
-
+  const [rawQuery, setRawQuery] = useState("");
+  const debouncedQuery = useDebounce(rawQuery, 300);
+  const [featured, setFeatured] = useState(null);
+  const [featuredLoading, setFeaturedLoading] = useState(true);
   const [selectedGenre, setSelectedGenre] = useState("");
   const [minRating, setMinRating] = useState("0");
   const [sortBy, setSortBy] = useState("");
-  const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
+
+  const {
+    movies,
+    genres,
+    canLoadMore,
+    isInitialLoading,
+    isPageLoading,
+    error,
+    loadMore,
+  } = useMovies({ query: debouncedQuery });
 
   const observerRef = useRef(null);
 
   useEffect(() => {
-    fetchMovies(1);
-    fetchGenres();
+    const controller = new AbortController();
+    fetchTrendingMovies({ timeWindow: "week", signal: controller.signal })
+      .then((data) => setFeatured(data?.results?.[0] ?? null))
+      .catch(() => setFeatured(null))
+      .finally(() => setFeaturedLoading(false));
+    return () => controller.abort();
   }, []);
 
-  const fetchMovies = async (pageNumber = 1) => {
-    if (loading) return;
+  const filteredMovies = useMemo(() => {
+    return movies
+      .filter(
+        (movie) =>
+          selectedGenre === "" ||
+          movie.genre_ids?.includes?.(Number(selectedGenre))
+      )
+      .filter((movie) => (movie.vote_average ?? 0) >= Number(minRating))
+      .sort((a, b) => {
+        if (sortBy === "rating")
+          return (b.vote_average ?? 0) - (a.vote_average ?? 0);
+        if (sortBy === "date")
+          return new Date(b.release_date) - new Date(a.release_date);
+        return 0;
+      });
+  }, [movies, minRating, selectedGenre, sortBy]);
 
-    setLoading(true);
+  const showLoadMoreSkeletons = isPageLoading;
 
-    const res = await fetch(
-      `${BASE_URL}/movie/popular?api_key=${API_KEY}&page=${pageNumber}`
-    );
-    const data = await res.json();
-
-    setMovies((prev) =>
-      pageNumber === 1 ? data.results : [...prev, ...data.results]
-    );
-
-    setLoading(false);
-  };
-
-  const fetchGenres = async () => {
-    const res = await fetch(`${BASE_URL}/genre/movie/list?api_key=${API_KEY}`);
-    const data = await res.json();
-    setGenres(data.genres);
-  };
-
-  const handleSearch = async (query) => {
-    const res = await fetch(
-      `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${query}`
-    );
-    const data = await res.json();
-    setMovies(data.results);
-    setPage(1);
-  };
-
-  // 🔥 Infinite Scroll Observer
+  // Infinite Scroll (optimized: stable + avoids redundant triggers)
   useEffect(() => {
+    const el = observerRef.current;
+    if (!el) return;
+
+    let lastIntersectAt = 0;
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !loading) {
-          setPage((prev) => prev + 1);
-        }
+        if (!entry?.isIntersecting) return;
+        if (!canLoadMore) return;
+
+        const now = Date.now();
+        if (now - lastIntersectAt < 750) return;
+        lastIntersectAt = now;
+        loadMore();
       },
-      { threshold: 1 }
+      { rootMargin: "600px 0px", threshold: 0.01 }
     );
 
-    if (observerRef.current) observer.observe(observerRef.current);
-
+    observer.observe(el);
     return () => observer.disconnect();
-  }, [loading]);
-
-  // Fetch new page
-  useEffect(() => {
-    if (page > 1) fetchMovies(page);
-  }, [page]);
-
-  const filteredMovies = movies
-    .filter(
-      (movie) =>
-        selectedGenre === "" || movie.genre_ids.includes(Number(selectedGenre))
-    )
-    .filter((movie) => movie.vote_average >= Number(minRating))
-    .sort((a, b) => {
-      if (sortBy === "rating") return b.vote_average - a.vote_average;
-      if (sortBy === "date")
-        return new Date(b.release_date) - new Date(a.release_date);
-      return 0;
-    });
+  }, [canLoadMore, loadMore]);
 
   return (
-    <div className="home-page">
-      <TopBar />
-
-      <SearchBar onSearch={handleSearch} />
+    <AppShell
+      header={{
+        showSearch: true,
+        searchValue: rawQuery,
+        onSearchChange: setRawQuery,
+        onSearchClear: () => setRawQuery(""),
+        searchStatus:
+          debouncedQuery.trim().length > 0 && isInitialLoading ? "Searching…" : "",
+      }}
+    >
+      <div className="home-page">
+        <HeroFeatured movie={featured} loading={featuredLoading} />
 
       <FilterBar
         genres={genres}
@@ -108,33 +106,39 @@ const Home = () => {
         setSortBy={setSortBy}
       />
 
-      {/* <div className="movies-grid">
-        {loading
-          ? Array.from({ length: 8 }).map((_, i) => (
-              <MovieCard key={i} loading={true} />
-            ))
-          : filteredMovies.map((movie) => (
-              <MovieCard key={movie.id} movie={movie} />
-            ))}
-      </div> */}
-      <div className="movies-grid">
-        {filteredMovies.map((movie) => (
-          <MovieCard key={movie.id} movie={movie} />
-        ))}
+      {!isInitialLoading && !error && filteredMovies.length === 0 ? (
+        <EmptyState
+          title={debouncedQuery.trim() ? "No results found" : "Nothing to show"}
+          description={
+            debouncedQuery.trim()
+              ? "Try a different title, or clear the search to browse popular movies."
+              : "Adjust your filters to discover something new."
+          }
+        />
+      ) : (
+        <div className="movies-grid">
+          {isInitialLoading
+            ? Array.from({ length: 12 }).map((_, i) => (
+                <MovieCard key={`skeleton-initial-${i}`} loading />
+              ))
+            : filteredMovies.map((movie) => (
+                <MovieCard key={movie.id} movie={movie} />
+              ))}
 
-        {/* Skeletons only for next-page loading */}
-        {loading &&
-          page > 1 &&
-          Array.from({ length: 6 }).map((_, i) => (
-            <MovieCard key={`skeleton-${i}`} loading />
-          ))}
-      </div>
+          {/* Skeletons only for next-page loading */}
+          {showLoadMoreSkeletons &&
+            Array.from({ length: 6 }).map((_, i) => (
+              <MovieCard key={`skeleton-${i}`} loading />
+            ))}
+        </div>
+      )}
 
       {/* 👇 Scroll trigger */}
       <div ref={observerRef} className="scroll-trigger" />
 
-      {loading && <p className="loading-text">Loading...</p>}
-    </div>
+      {error && <p className="loading-text">Failed to fetch movies.</p>}
+      </div>
+    </AppShell>
   );
 };
 

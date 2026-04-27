@@ -1,0 +1,13 @@
+.app-shell {
+  min-height: 100vh;
+}
+
+.app-main {
+  padding: var(--space-3) 0 var(--space-4);
+}
+
+.container {
+  width: min(var(--container), calc(100% - var(--space-2) * 2));
+  margin: 0 auto;
+}
+
