@@ -1,22 +1,38 @@
-## MovieHub
+**MovieHub**
 
-MovieHub is a production-grade movie browsing experience powered by TMDB.
+A modern movie discovery SPA built with React + Vite, focused on fast search, smooth browsing, and persistent user experience using the TMDB API.
 
-### Setup
+**Features**
+- Debounced movie search
+- Infinite scrolling (IntersectionObserver)
+- Client-side filtering & sorting
+- Favorites with localStorage persistence
+- Dark/light theme toggle
+- Detailed movie view with trailer support
 
-Create a `.env` file (see `.env.example`) and provide your TMDB API key:
+ **Tech Stack**
+- React 19
+- Vite
+- React Router
+- TMDB API
+- React Context (state management)
 
-```bash
-cp .env.example .env
+
+
+**Getting Started**
+1. Setup environment
+
+create .env file and add
+```
+VITE_TMDB_KEY=your_tmdb_api_key
 ```
 
-Install deps and start the dev server:
-
-```bash
+2. Run locally
+```
+git clone https://github.com/Addisu544/MovieHub.git
+cd MovieHub
 npm install
 npm run dev
 ```
-
-### Environment variables
-
-- **`VITE_TMDB_KEY`**: TMDB API key used for all API requests.
+**Live Demo**
+    https://moviehub544.netlify.app
