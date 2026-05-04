@@ -36,3 +36,18 @@ npm run dev
 ```
 **Live Demo**
     https://moviehub544.netlify.app
+
+
+## 📸 Screenshots
+
+### Home
+![Home](./screenshots/home.png)
+
+### Search & Filtering
+![Search](./screenshots/search.png)
+
+### Movie Details
+![Details](./screenshots/details.png)
+
+### Favorites
+![Favorites](./screenshots/favorites.png)
